@@ -8,75 +8,75 @@ import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 
 import Header from "../components/header";
+import {createTheme, ThemeProvider} from "@mui/material/styles";
 mapboxgl.accessToken = 'pk.eyJ1IjoiZzloNTdnb3oiLCJhIjoiY2xmbDB0cG16MDBqbzNxbXFmZmd2aTl4biJ9.6l-eGUfxHRISU1xm5WzBPw';
 
 
-const mapContainerRef = useRef(null);
-const [startRoute, setStartRoute] = useState();
 
-const map = new mapboxgl.Map({
-  container: mapContainerRef.current,
-  style: "mapbox://styles/mapbox/streets-v11",
-  center: [11.7481, 46.8634],
-  zoom: [9],
-  language: "it"
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: "#0D5B06"
+        }
+    }
 });
 
 
-const directions = new MapboxDirections({
-    accessToken: mapboxgl.accessToken,
-    unit: "metric",
-    profile: "mapbox/driving-traffic",
-    language: "it",
-    enableHighAccuracy: true,
-});
 
 const App = () => {
-       useEffect(() => {
-                const directions = new MapboxDirections({
-            accessToken: mapboxgl.accessToken,
-            unit: "metric",
-            profile: "mapbox/driving-traffic",
-            language: "it",
-            enableHighAccuracy: true,
-        });
-        directions.on("route", () => {
-           setStartRoute(1); 
-        });
-        directions.on("clear", () => {
-            setStartRoute(null);
-        });
-        map.on('move', () => {
-            setLng(map.getCenter().lng.toFixed(4));
-            setLat(map.getCenter().lat.toFixed(4));
-            setZoom(map.getZoom().toFixed(2));
-        });
-        map.addControl(
-           new mapboxgl.GeolocateControl({
-                positionOptions: {
-                    enableHighAccuracy: true
-                },
-                trackUserLocation: true,
-                showUserHeading: true
-            })
-        );
-
-        map.addControl(directions, "bottom-left");
-        return () => map.remove();
-    });
+    const ref = useRef(null);
+    const [startRoute, setStartRoute] = useState();
+    const [map, setMap] = useState(null);
+    useEffect(() => {
+        if (ref.current && !map) {
+            const map = new mapboxgl.Map({
+                style: "mapbox://styles/mapbox/streets-v12",
+                center: [11.7481,46.8634],
+                zoom: [11.7481],
+                language: "it"
+            });
+            const directions = new MapboxDirections({
+                accessToken: mapboxgl.accessToken,
+                unit: "metric",
+                profile: "mapbox/driving-traffic",
+                language: "it",
+            });
+            map.addControl(
+               new mapboxgl.GeolocateControl({
+                    positionOptions: {
+                        enableHighAccuracy: true
+                    },
+                    trackUserLocation: true,
+                    showUserHeading: true
+                })
+            );
+            map.addControl(directions, "bottom-left");
+            directions.on("route", () => {
+               setStartRoute(1);    
+            });
+            directions.on("clear", () => {
+                setStartRoute(null);
+            });
+            setMap(map);
+        }
+        return () => Map.remove();
+    },[ref,map]);
+    useEffect(() => {
+           });
     return (
-    <>
+    <ThemeProvider theme={theme}>
         <Header/>
-        <div className="map-container" ref={mapContainerRef} />
+        <div className="map-container" ref={ref} />
         {startRoute && 
         <div className="button-container">
-            <Button variant="contained" color="success" size="large" endIcon={<SendIcon />}>
+            <Button variant="contained" color="primary" size="large" endIcon={<SendIcon />}>
               Prenota Corsa
             </Button>
         </div>
             }
 
-    </>
+    </ThemeProvider>
     );
 }
 export default App

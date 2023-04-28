@@ -14,9 +14,11 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import Alert from '@mui/material/Alert';
 
 import Header from '../components/header';
 
+import axios from 'axios';
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -30,27 +32,55 @@ function Copyright(props) {
   );
 }
 
-const theme = createTheme();
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: "#0D5B06"
+        }
+    }
+});
 
 export default function SignInSide() {
-    const [age, setAge] = React.useState(9);
+    const [age, setAge] = React.useState(1);
+    const [error, setError] = React.useState(false);
+    const [right, setRight] = React.useState(false);
 
   const handleChange = (event) => {
     setAge(event.target.value);
   };
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-      firstName: data.get('firstName'),
-      lastName: data.get('lastName'),
-      dob: data.get('dob'),
-      cob: data.get('cob'),
-      category: data.get('categoria')
-    });
-  };
+  const handleSubmit = async e => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    let email = data.get('email');
+    let password =  data.get('password');
+    let firstName = data.get('firstName');        
+    let lastName = data.get('lastName');
+    let phone = data.get('phone');
+    let dob = data.get('dob');
+    const user = {nome:firstName,cognome:lastName,email:email,cellulare:phone,password:password,data_di_nascita:dob}; 
+    axios.post(
+        'http://localhost:8080/api/account/register', user)
+        .then(() => {
+            setRight(true);
+        })
+        .catch((e) => {
+            console.log("sbagliato");
+            console.log(e);
+            setError(true);
+        });
+    }        
+
+    if(error){
+        setTimeout(() => {
+          setError(false);
+        }, 3000);
+    }
+    if(right){  
+        setTimeout(() => {
+          setRight(false);
+        }, 3000);
+    }
 
   return (
     <ThemeProvider theme={theme}>
@@ -149,11 +179,11 @@ export default function SignInSide() {
                 <TextField
                   required
                   fullWidth
-                  name="ssn"
-                  label="Codice fiscale"
+                  name="phone"
+                  label="Numero di Cellulare"
                   type="text"
-                  id="ssn"
-                  autoComplete="ssn"
+                  id="phone"
+                  autoComplete="phone"
                 />
               </Grid>
             <Grid item xs={12}>
@@ -184,12 +214,16 @@ export default function SignInSide() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              color="primary"
             >
               Registrati 
             </Button>
+
+        {error && <Alert fullWidth variant="filled" severity="error">Errore nella creazione dell'utente</Alert>}
+
+        {right && <Alert fullWidth variant="filled" severity="success">Utente creato con successo</Alert>}
           </Box>
         
-        <Copyright sx={{ mt: 5 }} />
                     </Box>
 
     </Grid>

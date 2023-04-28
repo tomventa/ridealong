@@ -33,7 +33,14 @@ function Copyright(props) {
   );
 }
 
-const theme = createTheme();
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: "#0D5B06"
+        }
+    }
+});
+
 
 export default function SignInSide() {
   const navigate = useNavigate();
@@ -56,22 +63,15 @@ export default function SignInSide() {
     axios.post(
         'http://localhost:8080/api/account/auth', params,config)
         .then((response) => {
-            console.log("giusto");
-            setUser(user.username);
             localStorage.setItem('user', JSON.stringify(user.username));
             localStorage.setItem('token', JSON.stringify(response.data.access_token));
+            navigate('..');
         })
         .catch((e) => {
-            console.log("sbagliato");
             console.log(e);
             setError(true);
         });
   };
-  useEffect(() => {
-    if(user){
-        navigate('/');
-        }
-    });
   if(error){
       setTimeout(() => {
         setError(false);
@@ -111,7 +111,7 @@ export default function SignInSide() {
             <Typography component="h1" variant="h2" margin={30}>
                 Login Effettuato! 
             </Typography>
-            <Button variant="contained" onClick={() => {navigate('/')}}>Torna alla home</Button>
+            <Button variant="contained" color="primary" onClick={() => {navigate('/')}}>Torna alla home</Button>
           </Box>
         </Grid>
       </Grid>
@@ -178,6 +178,7 @@ export default function SignInSide() {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
+                color="primary"
               >
                Accedi 
               </Button>
