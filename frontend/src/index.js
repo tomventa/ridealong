@@ -11,6 +11,7 @@ import Home from './pages/home';
 import Register from './pages/register';
 import Login from './pages/signin';
 import Map from './pages/map';
+import Edit from './pages/edit_profile';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
     {
         path: '/map',
         element: <Map />
+    },
+    {
+        path: '/edit',
+        element: <Edit />
     }
 ]);
 

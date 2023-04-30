@@ -47,6 +47,7 @@ export default function Header() {
       <ul className="header__menu">
         <li><Link className="cambioc" to="/">Home</Link></li>
         <li><Link  className="cambioc" to="/map">DEMO</Link></li>
+        <li><Link className="cambioc" to="/edit">Modifica Profilo</Link></li>
       </ul>
           <div className="header__icons">
         <Button

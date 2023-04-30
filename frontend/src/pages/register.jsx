@@ -3,7 +3,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -19,18 +18,6 @@ import Alert from '@mui/material/Alert';
 import Header from '../components/header';
 
 import axios from 'axios';
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" >
-        RideAlong
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
 
 
 const theme = createTheme({
@@ -64,9 +51,7 @@ export default function SignInSide() {
         .then(() => {
             setRight(true);
         })
-        .catch((e) => {
-            console.log("sbagliato");
-            console.log(e);
+        .catch(() => {
             setError(true);
         });
     }        

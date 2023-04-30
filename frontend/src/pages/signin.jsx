@@ -18,7 +18,6 @@ import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 
 import Header from '../components/header';
-import {useEffect} from 'react';
 
 function Copyright(props) {
   return (
@@ -63,12 +62,12 @@ export default function SignInSide() {
     axios.post(
         'http://localhost:8080/api/account/auth', params,config)
         .then((response) => {
+            setUser(user);
             localStorage.setItem('user', JSON.stringify(user.username));
             localStorage.setItem('token', JSON.stringify(response.data.access_token));
             navigate('..');
         })
         .catch((e) => {
-            console.log(e);
             setError(true);
         });
   };
