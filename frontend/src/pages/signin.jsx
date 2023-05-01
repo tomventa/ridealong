@@ -67,7 +67,7 @@ export default function SignInSide() {
             localStorage.setItem('token', JSON.stringify(response.data.access_token));
             navigate('..');
         })
-        .catch((e) => {
+        .catch(() => {
             setError(true);
         });
   };

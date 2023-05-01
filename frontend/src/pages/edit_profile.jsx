@@ -1,4 +1,4 @@
-import React, {useEffect,useState} from 'react';
+import React, {useEffect,useRef,useState} from 'react';
 
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -9,6 +9,7 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -41,23 +42,28 @@ const theme = createTheme({
 });
 
 export default function EditProfile(){
-    const [user, setUser] = useState(null);
+    var user = useRef(0);
+    const [userR,setUser] = useState(null);
+    var auth = useRef(null);
+    const [error, setError] = useState(false);
+    const [right, setRight] = useState(false);
+    const [errorP,setErrorP] = useState(false);
+
     useEffect(() => {
-        var auth = null;
         if(localStorage.getItem('token') != null){
-            auth = 'Bearer ' + localStorage.getItem('token').replace(/["]+/g, '');
+            auth.current = 'Bearer ' + localStorage.getItem('token').replace(/["]+/g, '');
         }
         axios({
             method: 'get',
             url: 'http://localhost:8080/api/account/',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': auth 
+                'Authorization': auth.current
                 }
             })
             .then((response) => {
+                user.current = response.data;
                 setUser(response.data);
-                console.log("Yee");
             })
             .catch((e) => {
                 console.log(e);
@@ -67,36 +73,53 @@ export default function EditProfile(){
     async function handleSubmit(e) {
         e.preventDefault();
         const data = new FormData(e.currentTarget);
-        let email = data.get('email')==null?user.email:data.get('email');
+        let email = data.get('email')===""?user.current.email:data.get('email');
         let password =  data.get('password');
-        let firstName = data.get('firstName')==null?user.nome:data.get('firstName');        
-        let lastName = data.get('lastName')==null?user.cognome:data.get('lastName');
-        let phone = data.get('phone')==null?user.cellulare:data.get('phone');
-        let dob = data.get('dob')==null?user.data_di_nascita:data.get('dob');
-        // const user = {nome:firstName,cognome:lastName,email:email,cellulare:phone,password:password,data_di_nascita:dob}; 
-        const user = {nome:"Tim",cognome:"Cook",email:"test@test.it", cellulare:"+39 1112223333", password:"pippo", data_di_nascita:"2004-11-08"};
-        let auth = null;
-        if(localStorage.getItem('token') != null){
-            auth = 'Bearer ' + localStorage.getItem('token').replace(/["]+/g, '');
+        let firstName = data.get('firstName')===""?user.current.nome:data.get('firstName');        
+        let lastName = data.get('lastName')===""?user.current.cognome:data.get('lastName');
+        let phone = data.get('phone')===""?user.current.cellulare:data.get('phone');
+        let dob = data.get('dob')===""?user.current.data_di_nascita:data.get('dob');
+        const userM = {nome:firstName,cognome:lastName,email:email,cellulare:phone,password:password,data_di_nascita:dob}; 
+        if(userM.password === ""){
+            setErrorP(true);
         }
-        axios({
+        else{
+            axios({
             method: 'post',
             url: 'http://localhost:8080/api/account/edit',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': auth 
+                'Authorization': auth.current
                 },
-            data: user})
+            data: userM})
             .then((response) => {
-                console.log(response.data);
+                user.current = response.data;
+                setUser(response.data);
+                setRight(true);
             })
-            .catch((e) => {
-                console.log(e);
-                console.log("Errore non autenticato!");
+            .catch(() => {
+                setError(true);
             });
+        }
+    }
+
+    if(error){
+        setTimeout(() => {
+          setError(false);
+        }, 2000);
+    }
+    if(right){  
+        setTimeout(() => {
+          setRight(false);
+        }, 2000);
+    }
+    if(errorP){
+        setTimeout(() => {
+            setErrorP(false);
+        }, 2000);
     }
     
-    if(user){
+    if(userR){
         return (
     <ThemeProvider theme={theme}>
         <Header />
@@ -126,12 +149,12 @@ export default function EditProfile(){
                   id="firstName"
                   label="Nome"
                   autoFocus
-                  placeholder={user.nome}
+                  placeholder={user.current.nome}
                 />
               </Grid>
                 <Grid item xs={12} sm={6}>
-                <Typography component="h2" variant="h5" helperText=" " marginTop={2}>
-                    Nome attuale del tuo profilo: {user.nome}
+                <Typography component="h2" variant="h5" marginTop={2}>
+                    Nome attuale del tuo profilo: <b>{user.current.nome}</b>
                     </Typography>
                     </Grid>
               <Grid item xs={12} sm={6}>
@@ -141,12 +164,12 @@ export default function EditProfile(){
                   label="Cognome"
                   name="lastName"
                   autoComplete="family-name"
-                  placeholder={user.cognome}
+                  placeholder={user.current.cognome}
                 />
               </Grid>
                 <Grid item xs={12} sm={6}>
-                <Typography component="h2" variant="h5" helperText=" " marginTop={2}>
-                    Cognome attuale del tuo profilo: {user.cognome}
+                <Typography component="h2" variant="h5" marginTop={2}>
+                    Cognome attuale del tuo profilo: <b>{user.current.cognome}</b>
                     </Typography>
                     </Grid>
               <Grid item xs={12} sm={6}>
@@ -156,12 +179,12 @@ export default function EditProfile(){
                   label="Email "
                   name="email"
                   autoComplete="email"
-                  placeholder={user.email}
+                  placeholder={user.current.email}
                 />
               </Grid>
                 <Grid item xs={12} sm={6}>
-                <Typography component="h2" variant="h5" helperText=" " marginTop={2}>
-                    Email attuale del tuo profilo: {user.email}
+                <Typography component="h2" variant="h5" marginTop={2}>
+                    Email attuale del tuo profilo: <b>{user.current.email}</b>
                     </Typography>
                     </Grid>
               <Grid item xs={12}>
@@ -187,8 +210,8 @@ export default function EditProfile(){
                 />
               </Grid>
                 <Grid item xs={12} sm={6}>
-                <Typography component="h2" variant="h5" helperText=" " marginTop={2}>
-                    Data attuale del tuo profilo: {user.data_di_nascita}
+                <Typography component="h2" variant="h5"  marginTop={2}>
+                    Data attuale del tuo profilo: <b>{user.current.data_di_nascita}</b>
                     </Typography>
                     </Grid>
                 <Grid item xs={12} sm={6}>
@@ -199,12 +222,12 @@ export default function EditProfile(){
                   type="phone"
                   id="phone"
                   autoComplete="new-phone"
-                  placeholder={user.cellulare}
+                  placeholder={user.current.cellulare}
                 />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                <Typography component="h2" variant="h5" helperText=" " marginTop={2}>
-                    Cellulare attuale del tuo profilo: {user.cellulare}
+                <Typography component="h2" variant="h5" marginTop={2}>
+                    Cellulare attuale del tuo profilo: <b>{user.current.cellulare}</b>
                     </Typography>
                     </Grid>
 
@@ -219,6 +242,10 @@ export default function EditProfile(){
             >
               Modifica Profilo
             </Button>
+
+        {error && <Alert variant="filled" severity="error" >Errore nella modifica dell'utente</Alert>}
+        {right && <Alert variant="filled" severity="success" >Utente modificato con successo</Alert>}
+        {errorP && <Alert variant="filled" severity="error">Password non valida</Alert>}
           </Box>
         </Box>
         <Copyright sx={{ mt: 5 }} />

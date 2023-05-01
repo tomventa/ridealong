@@ -55,7 +55,7 @@ export default function Home() {
         />
         Your browser does not support the video tag.
   </video>
-  <div className="section watch">
+  <div className="section_watch">
     <div className="grid hero" id="home">
       <div className="col-50 pt-4 sma-text-center">
         <h1 className="text2">Prenota ora la tua corsa </h1>

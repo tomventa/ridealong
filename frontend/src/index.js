@@ -12,6 +12,7 @@ import Register from './pages/register';
 import Login from './pages/signin';
 import Map from './pages/map';
 import Edit from './pages/edit_profile';
+import Dashboard from './pages/dashboard';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
     {
         path: '/edit',
         element: <Edit />
+    },
+    {
+        path: '/dashboard',
+        element: <Dashboard />
     }
 ]);
 
