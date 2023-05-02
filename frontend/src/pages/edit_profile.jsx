@@ -55,7 +55,7 @@ export default function EditProfile(){
         }
         axios({
             method: 'get',
-            url: 'http://localhost:8080/api/account/',
+            url: '../api/account/',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': auth.current

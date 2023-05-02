@@ -47,7 +47,7 @@ export default function SignInSide() {
     let dob = data.get('dob');
     const user = {nome:firstName,cognome:lastName,email:email,cellulare:phone,password:password,data_di_nascita:dob}; 
     axios.post(
-        'http://localhost:8080/api/account/register', user)
+        '../api/account/register', user)
         .then(() => {
             setRight(true);
         })

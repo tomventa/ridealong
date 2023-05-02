@@ -60,7 +60,7 @@ export default function SignInSide() {
         }
     };
     axios.post(
-        'http://localhost:8080/api/account/auth', params,config)
+        '../api/account/auth', params,config)
         .then((response) => {
             setUser(user);
             localStorage.setItem('user', JSON.stringify(user.username));

@@ -124,7 +124,7 @@ const App = () => {
                 'Content-Type': 'application/json',
                 'Authorization': auth.current
             }
-            axios.post('http://localhost:8080/api/fare/add/',payload,{headers: headers})
+            axios.post('../api/fare/add/',payload,{headers: headers})
             .then(() => {
                 navigate('/dashboard');
             })
